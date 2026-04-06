@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const LABEL_W = 130;
 const pxPerSec = 40;
@@ -117,8 +117,12 @@ export default function Timeline({ tracks, duration, currentTime, onSeek = () =>
   const rulerRef = useRef(null);
 
   // ── drag state ─────────────────────────────────────────────────────────────
-  // null while idle; populated during any segment drag
+  // null while idle; populated during any segment drag.
+  // dragRef mirrors the drag state so onUp can read the latest value without
+  // calling onSegmentUpdate inside a React state setter (which is a side-effect
+  // and would cause React to treat any thrown error as a render error).
   const [drag, setDrag] = useState(null);
+  const dragRef = useRef(null);
 
   // Keep ruler X scroll in sync with body X scroll
   useEffect(() => {
@@ -161,7 +165,7 @@ export default function Timeline({ tracks, duration, currentTime, onSeek = () =>
     const origDuration = seg.duration;
     const startX = e.clientX;
 
-    setDrag({
+    const initialDrag = {
       trackId: track.id,
       segIdx,
       tweenIndex: seg.tweenIndex,
@@ -171,7 +175,9 @@ export default function Timeline({ tracks, duration, currentTime, onSeek = () =>
       startX,
       curStart: origStart,
       curDuration: origDuration,
-    });
+    };
+    dragRef.current = initialDrag;
+    setDrag(initialDrag);
 
     const onMove = (ev) => {
       const dx = (ev.clientX - startX) / pxPerSec;
@@ -190,23 +196,28 @@ export default function Timeline({ tracks, duration, currentTime, onSeek = () =>
           ns = Math.max(0, prev.origStart + clampedDx);
           nd = Math.max(0.05, prev.origDuration - clampedDx);
         }
-        return { ...prev, curStart: ns, curDuration: nd };
+        const next = { ...prev, curStart: ns, curDuration: nd };
+        dragRef.current = next;
+        return next;
       });
     };
 
     const onUp = () => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
-      setDrag((prev) => {
-        if (prev) {
-          onSegmentUpdate(prev.trackId, prev.segIdx, {
-            start: prev.curStart,
-            duration: prev.curDuration,
-            tweenIndex: prev.tweenIndex,
-          });
-        }
-        return null;
-      });
+      // Read the latest drag position from the ref — never call side-effects
+      // (onSegmentUpdate → rebuildTimeline) inside a React state setter, as any
+      // error thrown there is treated as a render error and blanks the page.
+      const finalDrag = dragRef.current;
+      dragRef.current = null;
+      setDrag(null);
+      if (finalDrag) {
+        onSegmentUpdate(finalDrag.trackId, finalDrag.segIdx, {
+          start: finalDrag.curStart,
+          duration: finalDrag.curDuration,
+          tweenIndex: finalDrag.tweenIndex,
+        });
+      }
     };
 
     document.addEventListener("mousemove", onMove);

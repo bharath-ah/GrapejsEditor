@@ -124,7 +124,10 @@ export default function BannerEditor({ htmlContent, onBack }) {
     // not on the window object reference (current).
     const td = iframeWindowRef.__tweenData;
 
-    if (!td || tweenIndex < 0 || tweenIndex >= td.length) {
+    // tweenIndex is undefined for CSS/GWD segments (no __tweenData in CSS mode).
+    // Guard against undefined/null explicitly to avoid a TypeError that would
+    // propagate up through React's state setter and unmount the component tree.
+    if (!td || tweenIndex == null || tweenIndex < 0 || tweenIndex >= td.length) {
       return;
     }
 
@@ -138,7 +141,7 @@ export default function BannerEditor({ htmlContent, onBack }) {
   function handleSegmentDelete(trackId, segIdx, { tweenIndex }) {
     const td = iframeWindowRef.__tweenData;
 
-    if (!td || tweenIndex < 0 || tweenIndex >= td.length) {
+    if (!td || tweenIndex == null || tweenIndex < 0 || tweenIndex >= td.length) {
       return;
     }
 

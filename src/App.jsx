@@ -4,13 +4,33 @@ import BannerEditor from "./BannerEditor";
 function App() {
   const [rawHtml, setRawHtml] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [fileName, setFileName] = useState("");
+
+  // Handle HTML file upload
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Allow only HTML files
+    if (!file.name.endsWith(".html")) {
+      alert("Please upload only an HTML file (index.html)");
+      return;
+    }
+
+    setFileName(file.name);
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      setRawHtml(event.target.result); // store HTML content
+    };
+
+    reader.readAsText(file);
+  };
 
   if (isLoaded && rawHtml) {
     return (
-      <BannerEditor
-        htmlContent={rawHtml}
-        onBack={() => setIsLoaded(false)}
-      />
+      <BannerEditor htmlContent={rawHtml} onBack={() => setIsLoaded(false)} />
     );
   }
 
@@ -28,34 +48,41 @@ function App() {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      <h1 style={{ color: "#111827", marginBottom: "8px" }}>Load Animated Banner HTML</h1>
-      <p style={{ color: "#6b7280", marginBottom: "24px" }}>Paste your Adobe Animate or custom GSAP HTML file below to edit.</p>
+      <h1 style={{ color: "#111827", marginBottom: "8px" }}>
+        Upload Animated Banner HTML
+      </h1>
 
-      <textarea
-        value={rawHtml}
-        onChange={(e) => setRawHtml(e.target.value)}
-        placeholder="<!DOCTYPE html>&#10;<html>&#10;  <head>...</head>&#10;  <body>...</body>&#10;</html>"
+      <p style={{ color: "#6b7280", marginBottom: "24px" }}>
+        Upload your <b>index.html</b> file to edit.
+      </p>
+
+      {/* Upload HTML file */}
+      <input
+        type="file"
+        accept=".html"
+        onChange={handleFileUpload}
         style={{
-          width: "100%",
-          maxWidth: "800px",
-          height: "400px",
-          background: "#ffffff",
-          color: "#374151",
+          marginBottom: "20px",
+          padding: "10px",
           border: "1px solid #d1d5db",
-          borderRadius: "8px",
-          padding: "16px",
-          fontFamily: "monospace",
-          fontSize: "13px",
-          resize: "none",
-          outline: "none",
-          boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)",
+          borderRadius: "6px",
+          background: "#ffffff",
         }}
       />
+
+      {/* Show uploaded file name */}
+      {fileName && (
+        <p style={{ color: "#4b5563", marginBottom: "10px" }}>
+          Uploaded File: <b>{fileName}</b>
+        </p>
+      )}
+
+      {/* Load Editor Button */}
       <button
         onClick={() => setIsLoaded(true)}
         disabled={!rawHtml.trim()}
         style={{
-          marginTop: "24px",
+          marginTop: "20px",
           padding: "12px 32px",
           background: rawHtml.trim() ? "#4f46e5" : "#e5e7eb",
           color: rawHtml.trim() ? "#ffffff" : "#9ca3af",

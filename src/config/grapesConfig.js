@@ -23,12 +23,14 @@ export function getGrapesConfig({ container, layerPanel, blockPanel }) {
         {
           id: "box",
           label: "Box", // Text only, SVG hidden by CSS
-          content: '<div style="min-height: 50px; min-width: 50px; padding: 10px;" data-gjs-resizable="true"></div>',
+          content:
+            '<div style="min-height: 50px; min-width: 50px; padding: 10px;" data-gjs-resizable="true"></div>',
         },
         {
           id: "text",
           label: "Text",
-          content: '<div data-gjs-type="text" data-gjs-resizable="true">Insert your text here</div>',
+          content:
+            '<div data-gjs-type="text" data-gjs-resizable="true">Insert your text here</div>',
         },
         {
           id: "image",
@@ -38,7 +40,8 @@ export function getGrapesConfig({ container, layerPanel, blockPanel }) {
         {
           id: "link",
           label: "Link",
-          content: '<a href="#" data-gjs-type="link" data-gjs-resizable="true">Link text</a>',
+          content:
+            '<a href="#" data-gjs-type="link" data-gjs-resizable="true">Link text</a>',
         },
       ],
     },
@@ -81,7 +84,9 @@ export function getGrapesConfig({ container, layerPanel, blockPanel }) {
 
     canvas: {
       // Load GSAP 3 inside the iframe so the animation timeline can use it.
-      scripts: ["https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"],
+      scripts: [
+        "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js",
+      ],
       styles: [],
     },
   };
@@ -133,7 +138,7 @@ export const STYLE_SECTORS = [
     open: false,
     properties: [
       { property: "background-color", type: "color" },
-      { property: "background-image", type: "text" },
+      { property: "background-image", type: "file" },
       { property: "background-size", type: "text" },
       { property: "background-position", type: "text" },
       {

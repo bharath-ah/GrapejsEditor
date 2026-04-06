@@ -4,7 +4,7 @@ import TextStylePanel from "./TextStylePanel";
 import FillStrokePanel from "./FillStrokePanel";
 import PositionsPanel from "./PositionsPanel";
 import ElementsPanel from "./ElementsPanel";
-// import AnimationPanel from "./AnimationPanel";
+import AnimationPanel from "./AnimationPanel";
 
 export default function Sidebar({ selectedTagName, selectedElementId, selectedStyles, handleStyleChange, editorInstanceRef, iframeWindowRef, rebuildTimeline }) {
   // For Text style accordion logic
@@ -104,7 +104,7 @@ export default function Sidebar({ selectedTagName, selectedElementId, selectedSt
           <ElementsPanel editorInstanceRef={editorInstanceRef} />
         </Accordion>
 
-        {/* <Accordion
+        <Accordion
           title="Animation"
           defaultOpen={false}
         >
@@ -115,7 +115,7 @@ export default function Sidebar({ selectedTagName, selectedElementId, selectedSt
               rebuildTimeline={rebuildTimeline}
             />
           </div>
-        </Accordion> */}
+        </Accordion>
       </div>
     </div>
   );
